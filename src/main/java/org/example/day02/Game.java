@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 public class Game {
     private final int id;
     private final Matcher gameStringMatcher;
-    private final Pull[] pulls;
+    private final BagPull[] bagPulls;
 
     public Game(String gameString) {
         this.gameStringMatcher = createRegexMatcher(gameString);
@@ -18,17 +18,17 @@ public class Game {
         }
 
         this.id = parseId();
-        this.pulls = parsePulls();
+        this.bagPulls = parsePulls();
     }
 
     public int getId() {
         return this.id;
     }
 
-    public boolean isGamePossible(Map<BallColor, Integer> bagContents) {
-        for (BallColor color : bagContents.keySet()) {
-            for (Pull pull : pulls) {
-                if (pull.getBallColorCount(color) > bagContents.get(color)) {
+    public boolean isGamePossible(Map<CubeColor, Integer> bagContents) {
+        for (CubeColor color : bagContents.keySet()) {
+            for (BagPull bagPull : bagPulls) {
+                if (bagPull.getCubeColorCount(color) > bagContents.get(color)) {
                     return false;
                 }
             }
@@ -36,32 +36,32 @@ public class Game {
         return true;
     }
 
-    public Map<BallColor, Integer> minimumSetOfCubes() {
-        Map<BallColor, Integer> result = new HashMap<>();
-        for (Pull pull : this.pulls) {
-            Map<BallColor, Integer> ballCounts = pull.getBallCounts();
-            for (BallColor ballColor : ballCounts.keySet()) {
-                if (result.containsKey(ballColor)) {
-                    result.put(ballColor, Math.max(result.get(ballColor), pull.getBallColorCount(ballColor)));
+    public Map<CubeColor, Integer> minimumSetOfCubes() {
+        Map<CubeColor, Integer> result = new HashMap<>();
+        for (BagPull bagPull : this.bagPulls) {
+            Map<CubeColor, Integer> cubeCounts = bagPull.getCubeCounts();
+            for (CubeColor cubeColor : cubeCounts.keySet()) {
+                if (result.containsKey(cubeColor)) {
+                    result.put(cubeColor, Math.max(result.get(cubeColor), bagPull.getCubeColorCount(cubeColor)));
                 } else {
-                    result.put(ballColor, pull.getBallColorCount(ballColor));
+                    result.put(cubeColor, bagPull.getCubeColorCount(cubeColor));
                 }
             }
         }
         return result;
     }
 
-    private Pull[] parsePulls() {
+    private BagPull[] parsePulls() {
         String pullsString = gameStringMatcher.group(2);
         String[] pullStrings = pullsString.split("; ");
-        return Arrays.stream(pullStrings).map(Pull::new).toArray(Pull[]::new);
+        return Arrays.stream(pullStrings).map(BagPull::new).toArray(BagPull[]::new);
     }
 
     private static Matcher createRegexMatcher(String gameString) {
         String regexHeader = "Game (\\d+): ";
-        String regexBallColors = "(red|green|blue)";
-        String regexBallColorAndAmount = "\\d+ " + regexBallColors;
-        String regexPull = regexBallColorAndAmount + "(, " + regexBallColorAndAmount + ")*";
+        String regexCubeColors = "(red|green|blue)";
+        String regexCubeColorAndAmount = "\\d+ " + regexCubeColors;
+        String regexPull = regexCubeColorAndAmount + "(, " + regexCubeColorAndAmount + ")*";
         String regexMultiplePulls = regexPull + "(; " + regexPull + ")*";
         String regexGameString = regexHeader + "(" + regexMultiplePulls + ")";
 

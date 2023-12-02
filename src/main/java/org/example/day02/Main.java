@@ -8,10 +8,10 @@ public class Main {
         String inputFilepath = "input-day02.txt";
         String[] input = linesFromResource(inputFilepath);
 
-        HashMap<BallColor, Integer> bagContents = new HashMap<>();
-        bagContents.put(BallColor.RED, 12);
-        bagContents.put(BallColor.GREEN, 13);
-        bagContents.put(BallColor.BLUE, 14);
+        HashMap<CubeColor, Integer> bagContents = new HashMap<>();
+        bagContents.put(CubeColor.RED, 12);
+        bagContents.put(CubeColor.GREEN, 13);
+        bagContents.put(CubeColor.BLUE, 14);
 
         int sumOfPossibleGamesIds = 0;
         int sumOfPowersOfMinimumSetsOfCubes = 0;

@@ -1,6 +1,6 @@
 package org.example.day02;
 
-public enum BallColor {
+public enum CubeColor {
     RED,
     GREEN,
     BLUE,
