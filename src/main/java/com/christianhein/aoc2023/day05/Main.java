@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.stream.StreamSupport;
+import java.util.stream.LongStream;
 
 public class Main {
     public static void main(String[] args) throws FileNotFoundException {
@@ -38,9 +38,9 @@ public class Main {
 
         List<Future<Long>> futures = new ArrayList<>();
         for (LongRange seedRange : almanac.seeds) {
-            futures.add(exec.submit(() -> StreamSupport.stream(seedRange.spliterator(), false)
+            futures.add(exec.submit(() -> LongStream.range(seedRange.low(), seedRange.high())
                     .map(almanac::seedToLocation)
-                    .min(Long::compare)
+                    .min()
                     .orElse(Long.MAX_VALUE)));
         }
         long lowestLocationNumber = futures.stream().map(longFuture -> {
