@@ -1,12 +1,14 @@
 package org.example.day02;
 
-import java.io.*;
+import org.example.util.IOUtils;
+
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 
 public class Main {
     public static void main(String[] args) throws FileNotFoundException {
         String inputFilepath = "input-day02.txt";
-        String[] input = linesFromResource(inputFilepath);
+        String[] input = IOUtils.linesFromResource(inputFilepath);
 
         HashMap<CubeColor, Integer> bagContents = new HashMap<>();
         bagContents.put(CubeColor.RED, 12);
@@ -31,15 +33,5 @@ public class Main {
 
         System.out.println("Solution to puzzle, part 1: " + sumOfPossibleGamesIds);
         System.out.println("Solution to puzzle, part 2: " + sumOfPowersOfMinimumSetsOfCubes);
-    }
-
-    private static String[] linesFromResource(String resourceName) throws FileNotFoundException {
-        InputStream fileInputStream = org.example.day01.Main.class.getClassLoader().getResourceAsStream(resourceName);
-        if (fileInputStream == null) {
-            throw new FileNotFoundException();
-        }
-        return new BufferedReader(new InputStreamReader(fileInputStream))
-                .lines()
-                .toArray(String[]::new);
     }
 }

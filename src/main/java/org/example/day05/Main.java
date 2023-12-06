@@ -1,32 +1,23 @@
 package org.example.day05;
 
-import java.io.BufferedReader;
+import org.example.util.IOUtils;
+
 import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.StreamSupport;
 
 public class Main {
     public static void main(String[] args) throws FileNotFoundException {
         String inputFilepath = "input-day05.txt";
-        String[] input = linesFromResource(inputFilepath);
+        String[] input = IOUtils.linesFromResource(inputFilepath);
 
         System.out.println("Solution to Day 5 puzzle (part 1): " + part1Solution(input));
         System.out.println("Solution to Day 5 puzzle (part 2): " + part2Solution(input));
-    }
-
-    private static String[] linesFromResource(String resourceName) throws FileNotFoundException {
-        InputStream fileInputStream = org.example.day01.Main.class.getClassLoader().getResourceAsStream(resourceName);
-        if (fileInputStream == null) {
-            throw new FileNotFoundException();
-        }
-        return new BufferedReader(new InputStreamReader(fileInputStream))
-                .lines()
-                .toArray(String[]::new);
     }
 
     private static String part1Solution(String[] input) {
