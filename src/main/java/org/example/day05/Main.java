@@ -15,35 +15,8 @@ public class Main {
         String inputFilepath = "input-day05.txt";
         String[] input = linesFromResource(inputFilepath);
 
-        Almanac almanac1 = Almanac.almanacFromInput(input, Almanac.SeedsParsingMode.Literal);
-        long lowestLocationNumber1 = Long.MAX_VALUE;
-        for (LongRange seedRange : almanac1.seeds) {
-            assert (seedRange.low() == seedRange.high());
-            long seed = seedRange.low();
-            long location = almanac1.seedToLocation(seed);
-            lowestLocationNumber1 = Math.min(lowestLocationNumber1, location);
-        }
-        System.out.println("Solution to Day 5 puzzle (part 1): " + lowestLocationNumber1);
-
-        Almanac almanac2 = Almanac.almanacFromInput(input, Almanac.SeedsParsingMode.Ranges);
-        ExecutorService exec = Executors.newFixedThreadPool(almanac2.seeds.size());
-        List<Future<Long>> futures = new ArrayList<>();
-        for (LongRange seedRange : almanac2.seeds) {
-            futures.add(exec.submit(() -> StreamSupport.stream(seedRange.spliterator(), false)
-                    .map(almanac2::seedToLocation)
-                    .min(Long::compare)
-                    .orElse(Long.MAX_VALUE)));
-        }
-        long lowestLocationNumber2 = futures.stream().map(longFuture -> {
-            try {
-                return longFuture.get();
-            } catch (Exception e) {
-                return null;
-            }
-        }).filter(Objects::nonNull).min(Long::compare).orElse(-1L);
-        exec.shutdown();
-
-        System.out.println("Solution to Day 5 puzzle (part 2): " + lowestLocationNumber2);
+        System.out.println("Solution to Day 5 puzzle (part 1): " + part1Solution(input));
+        System.out.println("Solution to Day 5 puzzle (part 2): " + part2Solution(input));
     }
 
     private static String[] linesFromResource(String resourceName) throws FileNotFoundException {
@@ -54,5 +27,40 @@ public class Main {
         return new BufferedReader(new InputStreamReader(fileInputStream))
                 .lines()
                 .toArray(String[]::new);
+    }
+
+    private static String part1Solution(String[] input) {
+        Almanac almanac = Almanac.almanacFromInput(input, Almanac.SeedsParsingMode.Literal);
+        long lowestLocationNumber = Long.MAX_VALUE;
+        for (LongRange seedRange : almanac.seeds) {
+            assert (seedRange.low() == seedRange.high());
+            long seed = seedRange.low();
+            long location = almanac.seedToLocation(seed);
+            lowestLocationNumber = Math.min(lowestLocationNumber, location);
+        }
+        return Long.toString(lowestLocationNumber);
+    }
+
+    private static String part2Solution(String[] input) {
+        Almanac almanac = Almanac.almanacFromInput(input, Almanac.SeedsParsingMode.Ranges);
+        ExecutorService exec = Executors.newFixedThreadPool(almanac.seeds.size());
+
+        List<Future<Long>> futures = new ArrayList<>();
+        for (LongRange seedRange : almanac.seeds) {
+            futures.add(exec.submit(() -> StreamSupport.stream(seedRange.spliterator(), false)
+                    .map(almanac::seedToLocation)
+                    .min(Long::compare)
+                    .orElse(Long.MAX_VALUE)));
+        }
+        long lowestLocationNumber = futures.stream().map(longFuture -> {
+            try {
+                return longFuture.get();
+            } catch (Exception e) {
+                return null;
+            }
+        }).filter(Objects::nonNull).min(Long::compare).orElse(-1L);
+        exec.shutdown();
+
+        return Long.toString(lowestLocationNumber);
     }
 }
