@@ -9,7 +9,6 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.stream.LongStream;
 
 public class Main {
     public static void main(String[] args) throws FileNotFoundException {
@@ -38,7 +37,7 @@ public class Main {
 
         List<Future<Long>> futures = new ArrayList<>();
         for (LongRange seedRange : almanac.seeds) {
-            futures.add(exec.submit(() -> LongStream.range(seedRange.low(), seedRange.high())
+            futures.add(exec.submit(() -> seedRange.stream()
                     .map(almanac::seedToLocation)
                     .min()
                     .orElse(Long.MAX_VALUE)));
