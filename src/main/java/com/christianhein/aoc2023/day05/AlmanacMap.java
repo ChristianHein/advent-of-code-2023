@@ -26,9 +26,10 @@ public class AlmanacMap {
     }
 
     public long getDestinationValue(long sourceValue) {
-        for (LongRange sourceRange : rangeMap.keySet()) {
+        for (Map.Entry<LongRange, LongRange> entry : rangeMap.entrySet()) {
+            LongRange sourceRange = entry.getKey();
             if (sourceRange.contains(sourceValue)) {
-                LongRange destRange = rangeMap.get(sourceRange);
+                LongRange destRange = entry.getValue();
                 long offset = sourceValue - sourceRange.low();
                 return destRange.low() + offset;
             }
