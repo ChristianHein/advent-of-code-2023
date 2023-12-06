@@ -1,5 +1,7 @@
 package org.example.day05;
 
+import org.example.util.StringUtils;
+
 import java.util.*;
 
 public class Almanac {
