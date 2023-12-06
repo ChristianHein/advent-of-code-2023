@@ -43,15 +43,18 @@ public class Main {
                     .min()
                     .orElse(Long.MAX_VALUE)));
         }
-        long lowestLocationNumber = futures.stream().map(longFuture -> {
-            try {
-                return longFuture.get();
-            } catch (Exception e) {
-                return null;
-            }
-        }).filter(Objects::nonNull).min(Long::compare).orElse(-1L);
+        long lowestLocationNumber = futures.stream()
+                .map(longFuture -> {
+                    try {
+                        return longFuture.get();
+                    } catch (Exception e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .min(Long::compare)
+                .orElse(-1L);
         exec.shutdown();
-
         return Long.toString(lowestLocationNumber);
     }
 }
