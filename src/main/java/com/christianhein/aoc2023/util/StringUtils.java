@@ -27,4 +27,9 @@ public class StringUtils {
         }
         return ints;
     }
+
+    public static String[] splitStringIntoRepeatingGroups(String input) {
+        //noinspection RegExpSuspiciousBackref
+        return input.split("(?<=(.))(?!\\1)");
+    }
 }
