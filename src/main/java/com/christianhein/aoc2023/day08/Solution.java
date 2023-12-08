@@ -37,10 +37,6 @@ public class Solution {
                 if (currentNode.equals(END_NODE)) {
                     return String.valueOf(steps);
                 }
-
-                if (currentNode.equals(START_NODE)) {
-                    throw new IllegalArgumentException("No path from start node to end node.");
-                }
             }
         }
     }
