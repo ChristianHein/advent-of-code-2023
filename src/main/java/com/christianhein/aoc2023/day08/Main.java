@@ -14,10 +14,10 @@ public class Main {
     }
 
     private static String part1Solution(String[] input) {
-        return new Solution().part1(input);
+        return new Solution(input).part1();
     }
 
     private static String part2Solution(String[] input) {
-        return new Solution().part2Smart(input);
+        return new Solution(input).part2();
     }
 }
