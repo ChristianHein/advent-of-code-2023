@@ -7,10 +7,10 @@ public class CamelCardsRound {
     // Assumption: Only one bid per unique hand.
     public LinkedHashMap<Hand, Integer> handsToBids = new LinkedHashMap<>();
 
-    public CamelCardsRound(String[] input) {
+    public CamelCardsRound(String[] input, boolean useJokersInsteadOfJacks) {
         Arrays.stream(input)
                 .map(line -> line.split(" ", 2))
-                .forEach(line -> handsToBids.put(new Hand(line[0]), Integer.parseInt(line[1])));
+                .forEach(line -> handsToBids.put(new Hand(line[0], useJokersInsteadOfJacks), Integer.parseInt(line[1])));
     }
 
     public long totalWinnings() {

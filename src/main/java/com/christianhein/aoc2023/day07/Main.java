@@ -14,11 +14,12 @@ public class Main {
     }
 
     private static String part1Solution(String[] input) {
-        CamelCardsRound round = new CamelCardsRound(input);
+        CamelCardsRound round = new CamelCardsRound(input, false);
         return String.valueOf(round.totalWinnings());
     }
 
     private static String part2Solution(String[] input) {
-        return "TODO";
+        CamelCardsRound round = new CamelCardsRound(input, true);
+        return String.valueOf(round.totalWinnings());
     }
 }

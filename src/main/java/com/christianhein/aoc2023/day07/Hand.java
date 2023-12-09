@@ -5,9 +5,9 @@ import com.christianhein.aoc2023.util.StringUtils;
 import java.util.*;
 
 public class Hand implements Comparable<Hand> {
-    public final List<StandardDeckPlayingCard> cards;
+    public final List<PlayingCard> cards;
 
-    public enum Type {
+    public enum HandType {
         HighCard,
         OnePair,
         TwoPair,
@@ -17,33 +17,33 @@ public class Hand implements Comparable<Hand> {
         FiveOfAKind,
     }
 
-    private final Type type;
+    private final HandType handType;
     private final List<String> cardGroupsSortedLongestFirst;
 
-    public Hand(String input) {
+    public Hand(String input, boolean useJokersInsteadOfJacks) {
         final int CARDS_PER_HAND = 5;
         assert (input.length() == CARDS_PER_HAND);
         this.cards = input.chars()
-                .mapToObj(c -> StandardDeckPlayingCard.fromLabel((char) c))
+                .mapToObj(c -> PlayingCard.fromLabel((char) c, useJokersInsteadOfJacks))
                 .toList();
-        this.cardGroupsSortedLongestFirst = parseGroups();
-        this.type = determineType();
+        this.cardGroupsSortedLongestFirst = parseGroups(useJokersInsteadOfJacks);
+        this.handType = determineType();
     }
 
-    public Type getType() {
-        return type;
+    public HandType getType() {
+        return handType;
     }
 
     @Override
     public int compareTo(Hand other) {
-        int compare = this.type.compareTo(other.type);
+        int compare = this.handType.compareTo(other.handType);
         if (compare != 0) {
             return compare;
         }
 
         for (int cardIndex = 0; cardIndex < 5; cardIndex++) {
-            StandardDeckPlayingCard thisCard = this.cards.get(cardIndex);
-            StandardDeckPlayingCard otherCard = other.cards.get(cardIndex);
+            PlayingCard thisCard = this.cards.get(cardIndex);
+            PlayingCard otherCard = other.cards.get(cardIndex);
             compare = thisCard.compareTo(otherCard);
             if (compare != 0) {
                 return compare;
@@ -61,8 +61,8 @@ public class Hand implements Comparable<Hand> {
                 .reduce("", String::concat);
     }
 
-    private List<String> parseGroups() {
-        List<StandardDeckPlayingCard> sortedCards = new ArrayList<>(this.cards);
+    private List<String> parseGroups(boolean useJokersInsteadOfJacks) {
+        List<PlayingCard> sortedCards = new ArrayList<>(this.cards);
         sortedCards.sort(Comparator.naturalOrder());
         String sortedHand = sortedCards.stream()
                 .map(card -> card.label)
@@ -75,34 +75,34 @@ public class Hand implements Comparable<Hand> {
             if (compare != 0) {
                 return compare;
             }
-            StandardDeckPlayingCard leftGroupCards = StandardDeckPlayingCard.fromLabel(left.charAt(0));
-            StandardDeckPlayingCard rightGroupCards = StandardDeckPlayingCard.fromLabel(right.charAt(0));
+            PlayingCard leftGroupCards = PlayingCard.fromLabel(left.charAt(0), useJokersInsteadOfJacks);
+            PlayingCard rightGroupCards = PlayingCard.fromLabel(right.charAt(0), useJokersInsteadOfJacks);
             return leftGroupCards.compareTo(rightGroupCards);
         }).reversed());
 
         return cardGroupsSortedLongestFirst;
     }
 
-    private Type determineType() {
+    private HandType determineType() {
         var cardGroups = cardGroupsSortedLongestFirst;
         if (cardGroups.size() == 1 && cardGroups.get(0).length() == 5) {
-            return Type.FiveOfAKind;
+            return HandType.FiveOfAKind;
         }
         if (cardGroups.size() == 2 && cardGroups.get(0).length() == 4) {
-            return Type.FourOfAKind;
+            return HandType.FourOfAKind;
         }
         if (cardGroups.size() == 2 && cardGroups.get(0).length() == 3 && cardGroups.get(1).length() == 2) {
-            return Type.FullHouse;
+            return HandType.FullHouse;
         }
         if (cardGroups.size() == 3 && cardGroups.get(0).length() == 3 && cardGroups.get(1).length() == 1) {
-            return Type.ThreeOfAKind;
+            return HandType.ThreeOfAKind;
         }
         if (cardGroups.size() == 3 && cardGroups.get(0).length() == 2 && cardGroups.get(1).length() == 2) {
-            return Type.TwoPair;
+            return HandType.TwoPair;
         }
         if (cardGroups.size() == 4 && cardGroups.get(0).length() == 2 && cardGroups.get(1).length() == 1) {
-            return Type.OnePair;
+            return HandType.OnePair;
         }
-        return Type.HighCard;
+        return HandType.HighCard;
     }
 }
