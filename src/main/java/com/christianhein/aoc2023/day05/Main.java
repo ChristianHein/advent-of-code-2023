@@ -3,12 +3,6 @@ package com.christianhein.aoc2023.day05;
 import com.christianhein.aoc2023.util.IOUtils;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class Main {
     public static void main(String[] args) throws FileNotFoundException {
@@ -21,39 +15,27 @@ public class Main {
 
     private static String part1Solution(String[] input) {
         Almanac almanac = Almanac.almanacFromInput(input, Almanac.SeedsParsingMode.Literal);
-        long lowestLocationNumber = Long.MAX_VALUE;
-        for (LongRange seedRange : almanac.seeds) {
-            assert (seedRange.low() == seedRange.high());
-            long seed = seedRange.low();
-            long location = almanac.seedToLocation(seed);
-            lowestLocationNumber = Math.min(lowestLocationNumber, location);
-        }
+        long lowestLocationNumber = almanac.seeds.stream()
+                .map(seedRange -> {
+                    assert seedRange.low() + 1 == seedRange.high();
+                    return seedRange.low();
+                })
+                .min(Long::compare)
+                .orElseThrow();
         return Long.toString(lowestLocationNumber);
     }
 
     private static String part2Solution(String[] input) {
         Almanac almanac = Almanac.almanacFromInput(input, Almanac.SeedsParsingMode.Ranges);
-        ExecutorService exec = Executors.newFixedThreadPool(almanac.seeds.size());
-
-        List<Future<Long>> futures = new ArrayList<>();
-        for (LongRange seedRange : almanac.seeds) {
-            futures.add(exec.submit(() -> seedRange.stream()
-                    .map(almanac::seedToLocation)
-                    .min()
-                    .orElse(Long.MAX_VALUE)));
-        }
-        long lowestLocationNumber = futures.stream()
-                .map(longFuture -> {
-                    try {
-                        return longFuture.get();
-                    } catch (Exception e) {
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
+        long lowestLocationNumber = almanac.seeds.stream()
+                .parallel()
+                .map(seedRange -> seedRange.stream()
+                        .parallel()
+                        .map(almanac::seedToLocation)
+                        .min()
+                        .orElseThrow())
                 .min(Long::compare)
-                .orElse(-1L);
-        exec.shutdown();
+                .orElseThrow();
         return Long.toString(lowestLocationNumber);
     }
 }
