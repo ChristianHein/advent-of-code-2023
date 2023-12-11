@@ -25,20 +25,16 @@ public class Solution {
 
         int steps = 0;
         String currentNode = START_NODE;
-        while (true) {
-            for (char instruction : navigationInstructions) {
-                currentNode = switch (instruction) {
-                    case 'L' -> nodes.get(currentNode).left();
-                    case 'R' -> nodes.get(currentNode).right();
-                    default -> throw new IllegalArgumentException();
-                };
-
-                steps++;
-                if (currentNode.equals(END_NODE)) {
-                    return String.valueOf(steps);
-                }
-            }
+        while (!currentNode.equals(END_NODE)) {
+            int instructionIndex = steps % navigationInstructions.length;
+            currentNode = switch (navigationInstructions[instructionIndex]) {
+                case 'L' -> nodes.get(currentNode).left();
+                case 'R' -> nodes.get(currentNode).right();
+                default -> throw new IllegalArgumentException();
+            };
+            steps++;
         }
+        return String.valueOf(steps);
     }
 
     public String part2() {
@@ -54,34 +50,27 @@ public class Solution {
         // distance per start node.
         List<Integer> startToEndDistances = new ArrayList<>(startNodes.size());
 
-        for (int startNodeIndex = 0; startNodeIndex < startNodes.size(); startNodeIndex++) {
-            String node = startNodes.get(startNodeIndex);
+        for (String node : startNodes) {
             ArrayList<Pair<String, Integer>> visitedNodesAtInstructionIndex = new ArrayList<>();
 
             int steps = 0;
-            outer:
-            while (true) {
-                for (int i = 0; i < navigationInstructions.length; i++) {
-                    Pair<String, Integer> nodeAndInstrIndex = new Pair<>(node, i);
-                    if (visitedNodesAtInstructionIndex.contains(nodeAndInstrIndex)) {
-                        break outer;
-                    }
-                    visitedNodesAtInstructionIndex.add(nodeAndInstrIndex);
+            Pair<String, Integer> nodeAndInstrIndex = new Pair<>(node, 0);
+            while (!visitedNodesAtInstructionIndex.contains(nodeAndInstrIndex)) {
+                visitedNodesAtInstructionIndex.add(nodeAndInstrIndex);
 
-                    Pair<String, String> nodeDests = nodes.get(node);
-                    switch (navigationInstructions[i]) {
-                        case 'L' -> node = nodeDests.left();
-                        case 'R' -> node = nodeDests.right();
-                        default -> {
-                            assert false;
-                        }
-                    }
-
-                    steps++;
-                    if (isEndNode.test(node)) {
-                        startToEndDistances.add(startNodeIndex, steps);
-                    }
+                int instructionIndex = steps % navigationInstructions.length;
+                switch (navigationInstructions[instructionIndex]) {
+                    case 'L' -> node = nodes.get(node).left();
+                    case 'R' -> node = nodes.get(node).right();
+                    default -> throw new IllegalArgumentException();
                 }
+                steps++;
+
+                if (isEndNode.test(node)) {
+                    startToEndDistances.add(steps);
+                }
+
+                nodeAndInstrIndex = new Pair<>(node, instructionIndex);
             }
         }
 
