@@ -114,6 +114,6 @@ public class Solution {
     }
 
     private static BigInteger leastCommonMultiple(BigInteger a, BigInteger b) {
-        return a.abs().multiply(b.abs()).divide(a.gcd(b));
+        return a.multiply(b).abs().divide(a.gcd(b));
     }
 }
