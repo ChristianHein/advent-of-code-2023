@@ -20,7 +20,7 @@ public class Almanac {
     public static Almanac almanacFromInput(String[] input, SeedsParsingMode seedsParsingMode) {
         Almanac almanac = new Almanac();
 
-        List<String[]> inputSections = splitStringArrayOnBlankLines(input);
+        List<String[]> inputSections = StringUtils.splitStringArrayOnBlankStrings(input);
 
         almanac.seeds = parseSeeds(inputSections.get(0)[0], seedsParsingMode);
         almanac.seedToSoil = new AlmanacMap(inputSections.get(1));
@@ -32,19 +32,6 @@ public class Almanac {
         almanac.humidityToLocation = new AlmanacMap(inputSections.get(7));
 
         return almanac;
-    }
-
-    private static List<String[]> splitStringArrayOnBlankLines(String[] input) {
-        List<String[]> result = new ArrayList<>();
-
-        int currentBlockStartIndex = 0;
-        for (int i = 0; i < input.length; i++) {
-            if (input[i].isBlank() || i == input.length - 1) {
-                result.add(Arrays.copyOfRange(input, currentBlockStartIndex, i));
-                currentBlockStartIndex = i + 1;
-            }
-        }
-        return result;
     }
 
     private static List<LongRange> parseSeeds(String input, SeedsParsingMode parsingMode) {
