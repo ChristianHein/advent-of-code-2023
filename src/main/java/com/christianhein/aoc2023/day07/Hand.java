@@ -6,6 +6,8 @@ import java.util.*;
 
 public class Hand implements Comparable<Hand> {
     public final List<PlayingCard> cards;
+    public final Hand bestHand;
+    public final boolean useJokersInsteadOfJacks;
 
     public enum HandType {
         HighCard,
@@ -20,14 +22,42 @@ public class Hand implements Comparable<Hand> {
     private final HandType handType;
     private final List<String> cardGroupsSortedLongestFirst;
 
+    private static final Hand WORST_HAND = new Hand("23456", true);
+
     public Hand(String input, boolean useJokersInsteadOfJacks) {
-        final int CARDS_PER_HAND = 5;
-        assert (input.length() == CARDS_PER_HAND);
+        if (input.length() != 5) {
+            throw new IllegalArgumentException("Hand must contain exactly 5 playing cards");
+        }
+
+        this.useJokersInsteadOfJacks = useJokersInsteadOfJacks;
         this.cards = input.chars()
                 .mapToObj(c -> PlayingCard.fromLabel((char) c, useJokersInsteadOfJacks))
                 .toList();
-        this.cardGroupsSortedLongestFirst = parseGroups(useJokersInsteadOfJacks);
+        this.bestHand = bestPossibleHandVersion();
+        this.cardGroupsSortedLongestFirst = parseGroups();
         this.handType = determineType();
+    }
+
+    public Hand bestPossibleHandVersion() {
+        if (!this.cards.contains(PlayingCard.Joker)) {
+            return this;
+        }
+
+        Hand bestHand = WORST_HAND;
+        for (PlayingCard card : this.cards) {
+            if (card != PlayingCard.Joker) {
+                continue;
+            }
+            for (PlayingCard possibleReplacement : PlayingCard.values()) {
+                if (possibleReplacement == PlayingCard.Joker || possibleReplacement == PlayingCard.Jack) {
+                    continue;
+                }
+                Hand newCards = new Hand(this.toString().replaceFirst("J", String.valueOf(possibleReplacement.label)), true)
+                        .bestPossibleHandVersion();
+                bestHand = bestHand.compareTo(newCards) > 0 ? bestHand : newCards;
+            }
+        }
+        return bestHand;
     }
 
     public HandType getType() {
@@ -36,11 +66,13 @@ public class Hand implements Comparable<Hand> {
 
     @Override
     public int compareTo(Hand other) {
-        int compare = this.handType.compareTo(other.handType);
+        // Compare types based on best version of hand
+        int compare = this.bestHand.handType.compareTo(other.bestHand.handType);
         if (compare != 0) {
             return compare;
         }
 
+        // Compare hands of same type based on actual hand (not best hand version)
         for (int cardIndex = 0; cardIndex < 5; cardIndex++) {
             PlayingCard thisCard = this.cards.get(cardIndex);
             PlayingCard otherCard = other.cards.get(cardIndex);
@@ -49,7 +81,6 @@ public class Hand implements Comparable<Hand> {
                 return compare;
             }
         }
-
         return 0;
     }
 
@@ -61,7 +92,7 @@ public class Hand implements Comparable<Hand> {
                 .reduce("", String::concat);
     }
 
-    private List<String> parseGroups(boolean useJokersInsteadOfJacks) {
+    private List<String> parseGroups() {
         List<PlayingCard> sortedCards = new ArrayList<>(this.cards);
         sortedCards.sort(Comparator.naturalOrder());
         String sortedHand = sortedCards.stream()
