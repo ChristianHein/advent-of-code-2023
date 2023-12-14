@@ -1,9 +1,6 @@
 package com.christianhein.aoc2023.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -247,5 +244,19 @@ public class Grid2D<T> {
 
     private int coordinatesToIndex(int row, int col) {
         return row * this.colCount + col;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (other == null || getClass() != other.getClass()) return false;
+        Grid2D<?> grid2D = (Grid2D<?>) other;
+        return rowCount == grid2D.rowCount && colCount == grid2D.colCount
+                && Objects.equals(flatGrid, grid2D.flatGrid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(flatGrid, rowCount, colCount);
     }
 }

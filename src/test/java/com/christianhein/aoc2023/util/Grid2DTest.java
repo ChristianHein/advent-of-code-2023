@@ -2,7 +2,7 @@ package com.christianhein.aoc2023.util;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -248,5 +248,41 @@ class Grid2DTest {
         assertThrows(IllegalArgumentException.class, () -> grid.insertRow(1, List.of('1', '2', '3', '4')));
         assertThrows(IllegalArgumentException.class, () -> grid.insertCol(1, List.of('1')));
         assertThrows(IllegalArgumentException.class, () -> grid.insertCol(1, List.of('1', '2', '3')));
+    }
+
+    @Test
+    void testEquals() {
+        Integer[][] a = {{10, 20}, {30, 40}};
+        Integer[][] b = {{10, 20}, {30, 40}};
+        Integer[][] c = {{13, 13}, {13, 13}};
+
+        Grid2D<Integer> gridA = new Grid2D<>(a);
+        Grid2D<Integer> gridB = new Grid2D<>(b);
+        Grid2D<Integer> gridC = new Grid2D<>(c);
+
+        assertEquals(gridA, gridB);
+        assertNotEquals(gridA, gridC);
+    }
+
+    @Test
+    void testHashCode() {
+        Integer[][] a = {{10, 20}, {30, 40}};
+        Integer[][] b = {{10, 20}, {30, 40}};
+        Integer[][] c = {{13, 13}, {13, 13}};
+
+        Grid2D<Integer> gridA = new Grid2D<>(a);
+        Grid2D<Integer> gridB = new Grid2D<>(b);
+        Grid2D<Integer> gridC = new Grid2D<>(c);
+
+        Set<Grid2D<Integer>> set = new HashSet<>();
+        set.add(gridA);
+        assertEquals(1, set.size());
+        set.add(gridB);
+        assertEquals(1, set.size());
+        set.add(gridC);
+        assertEquals(2, set.size());
+
+        set.remove(gridA);
+        assertEquals(1, set.size());
     }
 }
