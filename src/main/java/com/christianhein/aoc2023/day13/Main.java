@@ -9,15 +9,17 @@ public class Main {
         String inputFilepath = "input-day13.txt";
         String[] input = IOUtils.linesFromResource(inputFilepath);
 
-        System.out.println("Solution to Day 13 puzzle (part 1): " + part1Solution(input));
-        System.out.println("Solution to Day 13 puzzle (part 2): " + part2Solution(input));
+        Solution solution = new Solution(input);
+
+        System.out.println("Solution to Day 13 puzzle (part 1): " + part1Solution(solution));
+        System.out.println("Solution to Day 13 puzzle (part 2): " + part2Solution(solution));
     }
 
-    private static String part1Solution(String[] input) {
-        return String.valueOf(Solution.part1(input));
+    private static String part1Solution(Solution solution) {
+        return String.valueOf(solution.part1());
     }
 
-    private static String part2Solution(String[] input) {
-        return "TODO";
+    private static String part2Solution(Solution solution) {
+        return String.valueOf(solution.part2());
     }
 }
